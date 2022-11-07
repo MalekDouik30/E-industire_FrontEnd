@@ -1,0 +1,14 @@
+<nav class="navbar navbar-light bg-light">
+    <span class="navbar-brand mb-0 ml-1 h1" (click)="onHomePage()" >
+        <h2> E-Industrie </h2>
+    </span>
+    <span class="px-2">
+        <i class="bi bi-person"></i> 
+            &nbsp; {{userConnected}} &nbsp; 
+        <i class="bi bi-box-arrow-in-left"></i> 
+        <button type="button" class="btn btn-link" (click)="logout()">  
+             <span class="glyphicon glyphicon-log-out"></span> 
+             Log out
+        </button> 
+    </span> 
+</nav>

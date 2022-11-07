@@ -1,0 +1,18 @@
+<app-header></app-header>
+    <br>
+    <div class="container">
+        <!--Display all Apps-->
+        <div class="row">
+            <div class="col-sm-4" *ngFor="let item of this.listAllApps">
+              <div class="card" (click)="onSelectApp(item.appDefinitionKey)">
+                <div class="card-body">
+                  <h5 class="card-title"><span class="glyphicon {{item.icon}}"></span></h5>
+                  <p class="card-text">{{item.name}}</p>
+                  <a class="btn btn-primary">Go to Process</a>
+                </div>
+              </div>
+            </div>
+        </div>
+        <!--End Display all Apps-->
+    </div>
+    

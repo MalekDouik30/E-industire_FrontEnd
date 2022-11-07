@@ -1,0 +1,323 @@
+<div class="container" *ngIf="multistepsFormList.length==0">
+    <div class="card-body">
+        <form [formGroup]="myForm" (ngSubmit)="onSubmit()" class="mx-auto">
+            <ng-container *ngFor="let control of jsonFormData?.fields">
+                <!--Headline  -->
+                <h4 *ngIf="control.type === 'headline'">{{ control.name }}</h4>
+                <label *ngIf="control.type == 'expression'"> </label>
+                <label *ngIf="control.type != 'headline' && control.type != 'expression' && control.type != 'horizontal-line' ">{{ control.name }}  </label>
+                <label *ngIf="control.required" style="color:red ;"> * </label>
+                <br>
+                <!--Input  -->
+                <input *ngIf="['text','password','email','number','search','tel','url','date'].includes(control.type)"
+                    [type]="control.type"
+                    class="form-control"
+                    [formControlName]="control.id"
+                    [value]="control.value"
+                    [id]="control.id"
+                    [required]="control.required"
+                    [readonly]="control.readOnly"
+                   />
+           
+                <!--Radio button -->
+                <ng-container *ngIf="control.type == 'radio'">
+                    <ng-container *ngFor="let i of control.options;let index=index">
+                        <div class="form-check">
+                        <input  type="radio" class="form-check-input" name="{{control.id}}" id="{{control.id+index}}" [formControlName]="control.id"
+                        value="{{i.name}}"/>
+                        <label class="form-check-label" for="{{control.id+index}}"> {{i.name}}</label>
+                        </div>
+                    </ng-container>
+                </ng-container>
+        
+                <!--checkbox -->
+                <ng-container *ngIf="control.type === 'checkbox'">
+                    <input type="checkbox" [formControlName]="control.id" [checked]="control.value"/>
+                </ng-container>
+        
+                <!--Textarea -->
+                <textarea *ngIf="control.type === 'textarea'" class="form-control" [formControlName]="control.id" [value]="control.value"></textarea>
+        
+                 <!--Drop down / Select option -->
+                <select *ngIf="control.type === 'dropdown'" class="form-select" [formControlName]="control.id">
+                    <option *ngFor="let i of control.options" value="{{i.name}}"> {{i.name}} </option>
+                </select>
+               
+                <!-- Expression -->
+                <input *ngIf="control.type === 'expression'"
+                    type="text"
+                    class="form-control"
+                    [value]="control.value"
+                    [required]="control.required"
+                    [readonly]="true"
+                />
+        
+                <!--Upload -->
+                <input *ngIf="control.type === 'upload' && (control.value == null || control.value == '')"
+                    (change)="onUploadFile($event,control.id)" 
+                    class="form-control form-control-lg" 
+                    type="file"
+                />
+                
+                <!-- Read Uploaded file -->
+                <ng-container *ngIf="control.type === 'upload' && control.value != null && control.value != '' ">
+                    <br>
+                    <ng-container *ngFor="let item of control.value"> 
+                        <a href="http://localhost:8080/app/rest/content/{{item.id}}/raw" download="{{item.name}}" > {{item.name}}</a> 
+                    </ng-container>
+                    <br>
+                </ng-container>
+                <!--ng-container *ngIf="control.type === 'upload' && control.value != null && control.value != '' ">
+                    <ng-container *ngFor="let item of control.value">
+                        <br>
+                        <button type="button" class="btn btn-link" (click)="readFile(item.id)">{{item.name}}</button>
+                      
+                    </ng-container>
+                </ng-container-->
+
+                <!--horizontal-line-->
+                <ng-container *ngIf="control.type == 'horizontal-line'">
+                    <hr>
+                </ng-container>    
+        
+            </ng-container>
+
+            <br>
+            <button type="submit" class="btn btn-success" [disabled]="!myForm.valid"> Suivant </button>
+          </form>
+    </div>
+</div>
+
+
+<!--MultiSteps From ----------------------------------------------------------------------------------------------------------------->
+
+<!--ng-container  *ngIf="multistepsFormList.length > 0">
+    <ul ngbNav #nav="ngbNav" [destroyOnHide]="false" class="card-body nav-tabs">
+        
+        <ng-container *ngFor="let item of multistepsFormList;let i=index">
+            <li ngbNavItem="{{i+1}}" [destroyOnHide]="true">
+                <a ngbNavLink>{{i+1}}</a>
+                <ng-template ngbNavContent>
+                    <form [formGroup]="myForm" (ngSubmit)="onSubmit()" class="mx-auto">
+                        <ng-container *ngFor="let control of item">
+                         
+                            <h4 *ngIf="control.type === 'headline'">{{ control.name }}</h4>
+                            <label *ngIf="control.type == 'expression'"> </label>
+                            <label *ngIf="control.type != 'headline' && control.type != 'expression' && control.type != 'horizontal-line' ">{{ control.name }}  </label>
+                            <label *ngIf="control.required" style="color:red ;"> * </label>
+                            <br>
+
+                          
+                            <input *ngIf="['text','password','email','number','search','tel','url','date'].includes(control.type)"
+                            [type]="control.type"
+                            class="form-control"
+                            [formControlName]="control.id"
+                            [value]="control.value"
+                            [id]="control.id"
+                            [required]="control.required"
+                            [readonly]="control.readOnly"
+                            [placeholder]="control.placeholder"/>
+
+                          
+                            <ng-container *ngIf="control.type == 'radio'">
+                                <ng-container *ngFor="let i of control.options;let index=index">
+                                    <div class="form-check">
+                                    <input  type="radio" class="form-check-input" name="{{control.id}}" id="{{control.id+index}}" [formControlName]="control.id"
+                                    value="{{i.name}}"/>
+                                    <label class="form-check-label" for="{{control.id+index}}"> {{i.name}}</label>
+                                    </div>
+                                </ng-container>
+                            </ng-container>
+
+                        
+                            <ng-container *ngIf="control.type === 'checkbox'">
+                                <input type="checkbox" [formControlName]="control.id" [checked]="control.value"/>
+                            </ng-container>
+                
+                           
+                            <textarea *ngIf="control.type === 'textarea'" class="form-control" [formControlName]="control.id" [value]="control.value"></textarea>
+                            
+                          
+                            <select *ngIf="control.type === 'dropdown'" class="form-select" [formControlName]="control.id">
+                                <option *ngFor="let i of control.options" value="{{i.name}}"> {{i.name}} </option>
+                            </select>
+
+                          
+                            <input *ngIf="control.type === 'expression'"
+                            type="text"
+                            class="form-control"
+                            [value]="control.value"
+                            [required]="control.required"
+                            [readonly]="true"
+                            />
+                        
+                          
+                            <input *ngIf="control.type === 'upload' && (control.value == null || control.value == '')"
+                            (change)="onUploadFile($event,control.id)"
+                            class="form-control form-control-lg"
+                            type="file"
+                            />
+
+                          
+                            <ng-container *ngIf="control.type === 'upload' && control.value != null && control.value != '' ">
+                                <br>
+                                <ng-container *ngFor="let item of control.value">
+                                    <a href="http://localhost:8080/app/rest/content/{{item.id}}/raw" download="{{item.name}}" > {{item.name}}</a>
+                                </ng-container>
+                                <br>
+                            </ng-container>
+                        </ng-container>
+
+                            <br>
+                            <button type="submit" class="btn btn-success" [disabled]="!myForm.valid" *ngIf="i+1 == multistepsFormList.length"> Completer </button>
+                            <button class="btn btn-success" *ngIf="i+1 != multistepsFormList.length" ngbNavLink> Suivant </button>   
+                            
+
+                    </form>
+                </ng-template>
+            </li>
+        </ng-container>
+    </ul>
+
+    <div [ngbNavOutlet]="nav" class="mt-2"></div>
+  </ng-container!-->
+
+<!--MultiSteps From ----------------------------------------------------------------------------------------------------------------->
+  <mat-stepper orientation="vertical" *ngIf="multistepsFormList.length > 0" #stepper>
+    <mat-step *ngFor="let item of multistepsFormList;let i=index" >
+      <ng-template matStepLabel>Etape {{i+1}} / {{multistepsFormList.length}} </ng-template>
+      <ng-template matStepContent>
+
+        <form [formGroup]="myForm" (ngSubmit)="onSubmit()" class="mx-auto">
+            <ng-container *ngFor="let control of item">
+                <!--Headline  -->
+                <!--h3 *ngIf="control.type === 'headline'">{{ control.name }}</h3-->
+                <label *ngIf="control.type == 'expression'"> </label>
+                <label *ngIf="control.type != 'headline' && control.type != 'expression' && control.type != 'horizontal-line' ">{{ control.name }}  </label>
+                <label *ngIf="control.required" style="color:red ;"> * </label>
+               
+                <ng-container *ngIf="!control.id.includes('SliderDisplay')">
+                    <br>
+                </ng-container>
+
+                <!--Input  -->
+                <input *ngIf="['text','password','email','number','search','tel','url','date'].includes(control.type) && !control.id.includes('Slider')"
+                [type]="control.type"
+                class="form-control"
+                [formControlName]="control.id"
+                [value]="control.value"
+                [id]="control.id"
+                [required]="control.required"
+                [attr.disabled]="control.readOnly ? true : null"
+               />
+                <!--Radio button -->
+                <ng-container *ngIf="control.type == 'radio'">
+                    <ng-container *ngFor="let i of control.options;let index=index">
+                        <div class="form-check">
+                        <input  type="radio" 
+                            class="form-check-input" 
+                            name="{{control.id}}" 
+                            id="{{control.id+index}}" 
+                            [formControlName]="control.id"
+                            value="{{i.name}}"
+                            [attr.disabled]="control.readOnly ? true : null"
+                            />
+                        <label class="form-check-label" for="{{control.id+index}}"> {{i.name}}</label>
+                        </div>
+                    </ng-container>
+                </ng-container>
+
+                <!--checkbox -->
+                <ng-container *ngIf="control.type === 'checkbox'">
+                    <input type="checkbox"
+                        class="form-check-input" 
+                        [formControlName]="control.id" 
+                        [checked]="control.value"
+                        [attr.disabled]="control.readOnly ? true : null"/>
+                </ng-container>
+    
+                <!--Textarea -->
+                <textarea *ngIf="control.type === 'textarea'" 
+                class="form-control" 
+                [formControlName]="control.id" 
+                [value]="control.value"
+                [attr.disabled]="control.readOnly ? true : null">
+                </textarea>
+                
+                <!--Drop down / Select option -->
+                <select *ngIf="control.type === 'dropdown'" class="form-select" 
+                [formControlName]="control.id"
+                [attr.disabled]="control.readOnly ? true : null">
+                    <option *ngFor="let i of control.options" value="{{i.name}}"> {{i.name}} </option>
+                </select>
+
+                <!-- Expression -->
+                <input *ngIf="control.type === 'expression'"
+                type="text"
+                class="form-control"
+                [value]="control.value"
+                [required]="control.required"
+                [readonly]="true"
+                />
+            
+                <!--Upload -->
+                <input *ngIf="control.type === 'upload' && (control.value == null || control.value == '')"
+                (change)="onUploadFile($event,control.id)"
+                class="form-control form-control-lg"
+                type="file"
+                />
+
+                <!-- Read Uploaded file -->
+                <ng-container *ngIf="control.type === 'upload' && control.value != null && control.value != '' ">
+                    <br>
+                    <ng-container *ngFor="let item of control.value">
+                        <a href="http://localhost:8080/app/rest/content/{{item.id}}/raw" download="{{item.name}}" > {{item.name}}</a>
+                    </ng-container>
+                    <br>
+                </ng-container>
+
+
+
+            <!--Input Slider -->
+                <ng-container *ngIf="control.id.includes('SliderDisplay') && control.type !== 'expression' ">
+                    <mat-slider 
+                        [formControlName]="control.id" 
+                        min="1" 
+                        max="100" 
+                        step="1" 
+                        [value]="control.value"
+                        [(ngModel)]="control.value"
+                        [thumbLabel]="thumbLabel"
+                        > 
+                    </mat-slider>
+                </ng-container>
+            </ng-container>
+
+            <br>
+            <button type="submit" class="btn btn-success" [disabled]="!myForm.valid" *ngIf="i+1 == multistepsFormList.length"> Submit </button>
+                <!--button class="btn btn-success" *ngIf="i+1 != multistepsFormList.length" ngbNavLink> Suivant </button-->     
+        </form>
+        <button *ngIf="i!=0" mat-button matStepperPrevious class="btn btn-light">Back</button> 
+        <button *ngIf="i+1 != multistepsFormList.length"  mat-button matStepperNext class="btn btn-secondary">Next</button>
+    
+      </ng-template>
+    </mat-step>
+
+  </mat-stepper>
+
+
+
+
+
+
+
+  
+
+
+
+
+ 
+
+
+
+
