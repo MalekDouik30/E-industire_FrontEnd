@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import {AppDefinitionsResourceService} from 'src/app/apiGenerator/api/appDefinitionsResource.service'
+import { ProcessInstancesResourceService } from 'src/app/apiGenerator/api/processInstancesResource.service';
 
 @Component({
   selector: 'app-test',
@@ -13,7 +14,8 @@ export class TestComponent implements OnInit {
 
   constructor(
     private AppDefinitionsResourceService:AppDefinitionsResourceService,
-    private router:Router
+    private router:Router,
+    private ProcessInstancesResourceService:ProcessInstancesResourceService,
     ) { }
 
   ngOnInit(): void {
@@ -36,6 +38,21 @@ export class TestComponent implements OnInit {
 
   onSelectApp(nameProcess:string){
     this.router.navigate([`/process/${nameProcess}`]);
+  }
+
+  onStartProcess(processDefinitionId:string,processName:string){
+
+    const now = new Date();
+    let CreateProcessInstanceRepresentation:any={}
+    CreateProcessInstanceRepresentation.name= processName + '-' +now.toUTCString() ;
+    CreateProcessInstanceRepresentation.processDefinitionId=processDefinitionId;
+
+    this.ProcessInstancesResourceService.startNewProcessInstance(CreateProcessInstanceRepresentation).subscribe(res=>{
+      console.log(res)
+    },err=>{
+      console.error(err)
+    });
+
   }
 
 

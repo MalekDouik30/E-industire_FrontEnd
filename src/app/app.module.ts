@@ -36,7 +36,7 @@ import { FormlyBootstrapModule } from '@ngx-formly/bootstrap'; // npm i @ngx-for
     HeaderComponent,
     ProcessComponent,
     TaskComponent,
-    FormlyComponent
+    FormlyComponent,
   ],
   imports: [
     BrowserModule,

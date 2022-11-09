@@ -10,10 +10,13 @@ import{TaskFormResourceService} from 'src/app/apiGenerator/api/taskFormResource.
 })
 export class TaskComponent implements OnInit {
 
-  private idInstanceProcess:string
-  private listTask:any[]=[]
-  nameTask:string
-  flowableForm:any
+  private idInstanceProcess:string;
+  private listTask:any[]=[];
+  nameTask:string;
+  flowableForm:any;
+  idForm:any;
+  idTask:string;
+
 
   constructor(    
     private TaskQueryResourceService:TaskQueryResourceService,
@@ -32,11 +35,11 @@ export class TaskComponent implements OnInit {
   this.TaskQueryResourceService.listTasks({processInstanceId:  this.idInstanceProcess}).subscribe(
     (res:any)=>{
       this.listTask=[];
-      this.listTask.push(res.data)
+      this.listTask.push(res.data);
       for(let item of res.data){
-  
         this.getForm(item.id)
-        this.nameTask=item.name
+        this.idTask = item.id;
+        this.nameTask=item.name;
       }
     }
   )
@@ -45,7 +48,8 @@ export class TaskComponent implements OnInit {
   getForm(idTask:string){
     this.TaskFormResourceService.getTaskForm(idTask).subscribe(
       res=>{
-        this.flowableForm = res
+        this.flowableForm = res;
+        this.idForm=res.id;
       }
     )
   }

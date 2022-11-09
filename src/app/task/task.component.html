@@ -1,8 +1,19 @@
 
 
-<button type="button" class="btn-close" aria-label="Close" mat-dialog-close></button>
+<div class="container">
+    <div class="row">
+        <div class="col-8">
+            <button type="button" class="btn-close" aria-label="Close" mat-dialog-close></button>
+        </div>
+        <div class="col-3">
+        <button type="button" class="btn btn-outline-dark">Additional informations to complete</button>
+        </div>
+    </div>
+</div>
+<br>
 <h1>{{nameTask}}</h1>
-<app-formly [myJsonFormData]="flowableForm" ></app-formly>
+
+<app-formly [myJsonFormData]="flowableForm" [myIdFormJson]="idForm" [idTaskJson]="idTask" ></app-formly>
 
 
 
